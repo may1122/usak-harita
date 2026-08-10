@@ -25,7 +25,7 @@ st.set_page_config(
 )
 
 BASE_DIR = Path(__file__).resolve().parent
-PREFERRED_FILE_NAME = "nöbet_ecz_liste_koordinatli(1).xlsx"
+PREFERRED_FILE_NAME = "nöbet_ecz_liste_koordinatli.xlsx"
 
 
 def normalize_text(value: object) -> str:
