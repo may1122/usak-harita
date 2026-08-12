@@ -47,14 +47,14 @@ GROUPS: dict[str, list[str]] = {
 
     "B1": [
         "FATİH", "YENİ ŞİFA", "AYAN", "EYMEN", "GÜRAN",
-        "MUTAFOĞLU", "YÜKSEL", "ÖZLEM", "EGE", "DOKUR",
+        "MUTAFOĞLU", "YÜKSEL", "ÖZLEM", "EGE", "DOKUR", "BALKAN", 
     ],
     "B2": [
         "ÖRNEK", "SEVİM", "MASAL DİYARI", "PERDAHCI", "SULTAN",
         "AKDAĞ", "YAĞIZ", "SEVİNÇ", "BATI", "YAVUZ", "ÖZSEZER",
     ],
     "B3": [
-        "BALKAN", "SAMANCI", "KİRAZ", "DEMET", "SERAP", "DOĞA",
+        "SAMANCI", "KİRAZ", "DEMET", "SERAP", "DOĞA",
         "VİTAMİN", "GÜLŞİFA", "ÇEKİÇ", "ŞEYMA", "GÜNEŞ", "MURAT",
     ],
 
