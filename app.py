@@ -38,14 +38,14 @@ GROUPS: dict[str, list[str]] = {
         "SAĞLIK", "TAN",
         "AKKAYA", "HAZAL", "ERDEM", "ACAR", "ZÜMRÜT", "AYKANAT",
         "ALTINPINAR", "LOKMAN", "HİLAL", "YAŞAM", "ÇAKIR", "YEŞİM",
-        "AKTAY", "SU", "ZAFER", "NUR", "AKŞAHİN", "IHLAMUR", "AKINCI", "ÖMÜR", "DÖNMEZ",
+        "AKTAY", "SU", "ZAFER", "NUR", "AKŞAHİN", "IHLAMUR", "AKINCI", "ÖMÜR", "DÖNMEZ", "ÇAVUSOĞLU", "İREM",
     ],
     "B": [
         "FATİH", "YENİ ŞİFA", "AYAN", "EYMEN", "GÜRAN", "MUTAFOĞLU",
         "YÜKSEL", "ÖZLEM", "EGE", "DOKUR", "BALKAN", "SAMANCI", "KİRAZ",
         "DEMET", "SERAP", "DOĞA", "VİTAMİN", "GÜLŞİFA", "ÇEKİÇ", "ŞEYMA",
         "ÖRNEK", "SEVİM", "YAVUZ", "ÖZSEZER", "MASAL DİYARI", "PERDAHCI", "SULTAN", "AKDAĞ",
-        "ÇAVUSOĞLU", "AVGAN", "GÜNEŞ", "MURAT", "İREM",
+         "AVGAN", "GÜNEŞ", "MURAT",
     ],
     "C": [
         "AYDOĞDU", "EBRU", "MERT", "GÜVEN", "BAŞER", "İLKE", "FERAH",
