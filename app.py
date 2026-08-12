@@ -34,11 +34,11 @@ PREFERRED_FILE_NAME = "nöbet_ecz_liste_koordinatli(2).xlsx"
 
 GROUPS: dict[str, list[str]] = {
     "A1": [
-        "AKKAYA", "HAZAL", "ERDEM", "ACAR", "ALTINPINAR", "LOKMAN", "HİLAL",
+        "AKKAYA", "HAZAL", "ERDEM", "ACAR", "ALTINPINAR", "LOKMAN", "HİLAL", "AKTAY", "YAŞAM", "ÇAKIR",
     ],
     "A2": [
         "SU", "ZAFER", "NUR", "AHSEN", "IŞIL", "DİDEM", "SAĞLIK",
-        "TAN", "FİLİZ", "ÇAKIR", "YEŞİM", "AKTAY", "YAŞAM",
+        "TAN", "FİLİZ", "YEŞİM",
     ],
     "A3": [
         "ZÜMRÜT", "AYKANAT", "AKŞAHİN", "IHLAMUR", "AKINCI",
