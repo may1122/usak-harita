@@ -14,7 +14,7 @@ from folium.plugins import Fullscreen, MeasureControl
 
 # =========================================================
 # AYÇA UŞAK ECZANE HARİTASI
-# VERSION : V1.1 - 3 GRUP
+# VERSION : V1.2 - 3 GRUP GÜNCEL
 # DATE    : 12.08.2026
 # =========================================================
 
@@ -36,31 +36,26 @@ GROUPS: dict[str, list[str]] = {
     "A": [
         "BATI", "YAĞIZ", "FİLİZ", "SEVİNÇ", "AHSEN", "IŞIL", "DİDEM",
         "SAĞLIK", "TAN", "MASAL DİYARI", "PERDAHCI", "SULTAN", "AKDAĞ",
-        "AKKAYA", "HAZAL", "ERDEM", "ACAR", "YAVUZ", "ÖZSEZER",
+        "AKKAYA", "HAZAL", "ERDEM", "ACAR", "ZÜMRÜT", "AYKANAT",
         "ALTINPINAR", "LOKMAN", "HİLAL", "YAŞAM", "ÇAKIR", "YEŞİM",
-        "AKTAY", "SU", "ZAFER", "NUR",
-        # Koordinat ve sayı dengesi için eklenenler
-        "AKŞAHİN", "IHLAMUR",
+        "AKTAY", "SU", "ZAFER", "NUR", "AKŞAHİN", "IHLAMUR",
     ],
     "B": [
         "FATİH", "YENİ ŞİFA", "AYAN", "EYMEN", "GÜRAN", "MUTAFOĞLU",
         "YÜKSEL", "ÖZLEM", "EGE", "DOKUR", "BALKAN", "SAMANCI", "KİRAZ",
         "DEMET", "SERAP", "DOĞA", "VİTAMİN", "GÜLŞİFA", "ÇEKİÇ", "ŞEYMA",
-        "ÖRNEK", "SEVİM", "ZÜMRÜT", "AKINCI", "ÖMÜR", "DÖNMEZ", "AYKANAT",
-        "ÇAVUSOĞLU", "AVGAN",
-        # Koordinat ve sayı dengesi için eklenenler
-        "GÜNEŞ", "EBRU",
+        "ÖRNEK", "SEVİM", "YAVUZ", "AKINCI", "ÖMÜR", "DÖNMEZ", "ÖZSEZER",
+        "ÇAVUSOĞLU", "AVGAN", "GÜNEŞ", "MURAT",
     ],
     "C": [
-        "AYDOĞDU", "MURAT", "MERT", "GÜVEN", "BAŞER", "İLKE", "FERAH",
+        "AYDOĞDU", "EBRU", "MERT", "GÜVEN", "BAŞER", "İLKE", "FERAH",
         "DURAN", "UMUT", "MAYA", "SERKAN", "ŞAN", "DÜLGEROĞLU", "SÜMER",
         "AŞİYAN", "POYRAZ", "EYLÜL", "MENDEPAZARI", "ÖZÇELİK", "BİZİM",
         "ÖZYAVUZ", "HUZUR", "YILDIZ", "FARUK", "İREM", "EGE HAYAT", "DAMLA",
-        "GÖKSEL", "DEMİR",
-        # Koordinat ve sayı dengesi için eklenenler
-        "GÜL", "NUSRET", "SELCEN",
+        "GÖKSEL", "DEMİR", "GÜL", "NUSRET", "SELCEN",
     ],
 }
+
 
 GROUP_COLORS = {
     "A": "#16A34A",  # yeşil
