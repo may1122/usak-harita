@@ -14,7 +14,7 @@ from folium.plugins import Fullscreen, MeasureControl
 
 # =========================================================
 # AYÇA UŞAK ECZANE HARİTASI
-# VERSION : V1.3 - 3 ANA GRUP / 9 ALT GRUP
+# VERSION : V1.4 - ALT GRUP BÖLGE ÇİZGİLERİ
 # DATE    : 12.08.2026
 # =========================================================
 
@@ -341,6 +341,90 @@ def add_legend(map_obj: folium.Map) -> None:
     map_obj.get_root().html.add_child(folium.Element(legend_html))
 
 
+
+def convex_hull(points: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    """Noktaların dış sınırını (convex hull) hesaplar."""
+    points = sorted(set(points))
+    if len(points) <= 1:
+        return points
+
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+
+    lower = []
+    for p in points:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 0:
+            lower.pop()
+        lower.append(p)
+
+    upper = []
+    for p in reversed(points):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:
+            upper.pop()
+        upper.append(p)
+
+    return lower[:-1] + upper[:-1]
+
+
+def add_subgroup_boundaries(map_obj: folium.Map, df: pd.DataFrame) -> None:
+    """A1-A3, B1-B3, C1-C3 alt gruplarını çizgilerle sınırlar."""
+    subgroup_names = ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"]
+
+    for subgroup in subgroup_names:
+        subset = df[df["Alt Grup"] == subgroup].copy()
+        if subset.empty:
+            continue
+
+        main_group = subgroup[0]
+        line_color = GROUP_COLORS.get(main_group, "#6B7280")
+
+        layer = FeatureGroup(
+            name=f"{subgroup} bölge sınırı",
+            show=True,
+        )
+
+        points = [
+            (float(row["Latitude"]), float(row["Longitude"]))
+            for _, row in subset.iterrows()
+        ]
+
+        hull = convex_hull(points)
+
+        if len(hull) >= 3:
+            folium.Polygon(
+                locations=hull,
+                color=line_color,
+                weight=3,
+                opacity=0.85,
+                fill=True,
+                fill_color=line_color,
+                fill_opacity=0.06,
+                tooltip=f"{subgroup} bölgesi",
+            ).add_to(layer)
+
+        elif len(hull) == 2:
+            folium.PolyLine(
+                locations=hull,
+                color=line_color,
+                weight=3,
+                opacity=0.85,
+                tooltip=f"{subgroup} bağlantısı",
+            ).add_to(layer)
+
+        elif len(hull) == 1:
+            folium.Circle(
+                location=hull[0],
+                radius=120,
+                color=line_color,
+                weight=3,
+                opacity=0.85,
+                fill=False,
+                tooltip=f"{subgroup} bölgesi",
+            ).add_to(layer)
+
+        layer.add_to(map_obj)
+
+
 def build_map(df: pd.DataFrame) -> folium.Map:
     center = [
         float(df["Latitude"].median()),
@@ -369,6 +453,7 @@ def build_map(df: pd.DataFrame) -> folium.Map:
         show=False,
     ).add_to(map_obj)
 
+    add_subgroup_boundaries(map_obj, df)
     add_pharmacy_markers(map_obj, df)
     add_legend(map_obj)
 
@@ -406,6 +491,7 @@ def build_map(df: pd.DataFrame) -> folium.Map:
 st.title("Uşak Eczane Haritası")
 st.caption(
     "AYÇA — Grup A yeşil, Grup B mavi, Grup C kırmızı; alt gruplar A1-A3, B1-B3, C1-C3. "
+    "Aynı alt gruptaki eczaneler bölge sınır çizgileriyle çevrelenir. "
     "Eczane adları fareyle üzerine gelince görünür; tıklayınca detay açılır."
 )
 
