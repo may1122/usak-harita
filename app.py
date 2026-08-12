@@ -45,13 +45,13 @@ GROUPS: dict[str, list[str]] = {
         "YÜKSEL", "ÖZLEM", "EGE", "DOKUR", "BALKAN", "SAMANCI", "KİRAZ",
         "DEMET", "SERAP", "DOĞA", "VİTAMİN", "GÜLŞİFA", "ÇEKİÇ", "ŞEYMA",
         "ÖRNEK", "SEVİM", "YAVUZ", "AKINCI", "ÖMÜR", "DÖNMEZ", "ÖZSEZER",
-        "ÇAVUSOĞLU", "AVGAN", "GÜNEŞ", "MURAT",
+        "ÇAVUSOĞLU", "AVGAN", "GÜNEŞ", "MURAT", "İREM",
     ],
     "C": [
         "AYDOĞDU", "EBRU", "MERT", "GÜVEN", "BAŞER", "İLKE", "FERAH",
         "DURAN", "UMUT", "MAYA", "SERKAN", "ŞAN", "DÜLGEROĞLU", "SÜMER",
         "AŞİYAN", "POYRAZ", "EYLÜL", "MENDEPAZARI", "ÖZÇELİK", "BİZİM",
-        "ÖZYAVUZ", "HUZUR", "YILDIZ", "FARUK", "İREM", "EGE HAYAT", "DAMLA",
+        "ÖZYAVUZ", "HUZUR", "YILDIZ", "FARUK", "EGE HAYAT", "DAMLA",
         "GÖKSEL", "DEMİR", "GÜL", "NUSRET", "SELCEN",
     ],
 }
