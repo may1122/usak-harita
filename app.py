@@ -14,8 +14,8 @@ from folium.plugins import Fullscreen, MeasureControl
 
 # =========================================================
 # AYÇA UŞAK ECZANE HARİTASI
-# VERSION : V1.0
-# DATE    : 10.08.2026
+# VERSION : V1.1 - 3 GRUP
+# DATE    : 12.08.2026
 # =========================================================
 
 st.set_page_config(
@@ -25,11 +25,58 @@ st.set_page_config(
 )
 
 BASE_DIR = Path(__file__).resolve().parent
-PREFERRED_FILE_NAME = "nöbet_ecz_liste_koordinatli(1).xlsx"
+PREFERRED_FILE_NAME = "nöbet_ecz_liste_koordinatli(2).xlsx"
+
+# ---------------------------------------------------------
+# GRUPLAR
+# A = YEŞİL, B = MAVİ, C = KIRMIZI
+# ---------------------------------------------------------
+
+GROUPS: dict[str, list[str]] = {
+    "A": [
+        "BATI", "YAĞIZ", "FİLİZ", "SEVİNÇ", "AHSEN", "IŞIL", "DİDEM",
+        "SAĞLIK", "TAN", "MASAL DİYARI", "PERDAHCI", "SULTAN", "AKDAĞ",
+        "AKKAYA", "HAZAL", "ERDEM", "ACAR", "YAVUZ", "ÖZSEZER",
+        "ALTINPINAR", "LOKMAN", "HİLAL", "YAŞAM", "ÇAKIR", "YEŞİM",
+        "AKTAY", "SU", "ZAFER", "NUR",
+        # Koordinat ve sayı dengesi için eklenenler
+        "AKŞAHİN", "IHLAMUR",
+    ],
+    "B": [
+        "FATİH", "YENİ ŞİFA", "AYAN", "EYMEN", "GÜRAN", "MUTAFOĞLU",
+        "YÜKSEL", "ÖZLEM", "EGE", "DOKUR", "BALKAN", "SAMANCI", "KİRAZ",
+        "DEMET", "SERAP", "DOĞA", "VİTAMİN", "GÜLŞİFA", "ÇEKİÇ", "ŞEYMA",
+        "ÖRNEK", "SEVİM", "ZÜMRÜT", "AKINCI", "ÖMÜR", "DÖNMEZ", "AYKANAT",
+        "ÇAVUSOĞLU", "AVGAN",
+        # Koordinat ve sayı dengesi için eklenenler
+        "GÜNEŞ", "EBRU",
+    ],
+    "C": [
+        "AYDOĞDU", "MURAT", "MERT", "GÜVEN", "BAŞER", "İLKE", "FERAH",
+        "DURAN", "UMUT", "MAYA", "SERKAN", "ŞAN", "DÜLGEROĞLU", "SÜMER",
+        "AŞİYAN", "POYRAZ", "EYLÜL", "MENDEPAZARI", "ÖZÇELİK", "BİZİM",
+        "ÖZYAVUZ", "HUZUR", "YILDIZ", "FARUK", "İREM", "EGE HAYAT", "DAMLA",
+        "GÖKSEL", "DEMİR",
+        # Koordinat ve sayı dengesi için eklenenler
+        "GÜL", "NUSRET", "SELCEN",
+    ],
+}
+
+GROUP_COLORS = {
+    "A": "#16A34A",  # yeşil
+    "B": "#2563EB",  # mavi
+    "C": "#DC2626",  # kırmızı
+}
+
+GROUP_LABELS = {
+    "A": "Grup A - Yeşil",
+    "B": "Grup B - Mavi",
+    "C": "Grup C - Kırmızı",
+}
 
 
 def normalize_text(value: object) -> str:
-    """Dosya ve sütun adlarını toleranslı eşleştirmek için normalize eder."""
+    """Dosya, sütun ve eczane adlarını toleranslı eşleştirmek için normalize eder."""
     if pd.isna(value):
         return ""
 
@@ -49,6 +96,34 @@ def normalize_text(value: object) -> str:
     return re.sub(r"[^0-9A-Z]", "", text)
 
 
+def build_group_lookup() -> dict[str, str]:
+    """Her eczane anahtarını tek bir gruba bağlar ve çift atamayı engeller."""
+    lookup: dict[str, str] = {}
+    duplicates: list[str] = []
+
+    for group_name, pharmacy_names in GROUPS.items():
+        for pharmacy_name in pharmacy_names:
+            key = normalize_text(pharmacy_name)
+            if not key:
+                continue
+
+            if key in lookup and lookup[key] != group_name:
+                duplicates.append(pharmacy_name)
+                continue
+
+            lookup[key] = group_name
+
+    if duplicates:
+        raise ValueError(
+            "Birden fazla gruba atanmış eczane var: " + ", ".join(sorted(set(duplicates)))
+        )
+
+    return lookup
+
+
+GROUP_LOOKUP = build_group_lookup()
+
+
 def locate_pharmacy_file() -> Path | None:
     """Önce tercih edilen adı, sonra uygun koordinat Excel'ini otomatik bulur."""
     preferred = BASE_DIR / PREFERRED_FILE_NAME
@@ -56,6 +131,7 @@ def locate_pharmacy_file() -> Path | None:
         return preferred
 
     candidates = sorted(BASE_DIR.glob("*.xlsx"))
+
     for candidate in candidates:
         key = normalize_text(candidate.name)
         if "NOBET" in key and "KOORDINAT" in key:
@@ -145,6 +221,10 @@ def read_pharmacies(path: str, file_version: int) -> pd.DataFrame:
 
     result["Anahtar"] = result["Eczane"].map(normalize_text)
     result = result.drop_duplicates(subset=["Anahtar"], keep="first").reset_index(drop=True)
+
+    # Grup ataması
+    result["Grup"] = result["Anahtar"].map(GROUP_LOOKUP).fillna("ATANMAMIŞ")
+
     result.attrs["sheet_name"] = selected_sheet
 
     if result.empty:
@@ -154,22 +234,39 @@ def read_pharmacies(path: str, file_version: int) -> pd.DataFrame:
 
 
 def add_pharmacy_markers(map_obj: folium.Map, df: pd.DataFrame) -> None:
-    pharmacy_layer = FeatureGroup(name="Eczaneler", show=True)
+    """Eczaneleri A/B/C gruplarına göre ayrı renk ve katmanlarda gösterir."""
+
+    layers = {
+        "A": FeatureGroup(name=GROUP_LABELS["A"], show=True),
+        "B": FeatureGroup(name=GROUP_LABELS["B"], show=True),
+        "C": FeatureGroup(name=GROUP_LABELS["C"], show=True),
+        "ATANMAMIŞ": FeatureGroup(name="Atanmamış", show=True),
+    }
 
     for _, row in df.iterrows():
+        group = str(row["Grup"])
         pharmacy_name = html.escape(str(row["Eczane"]))
         phone = html.escape(str(row.get("Telefon", "")))
         address = html.escape(str(row.get("Adres", "")))
 
+        if group in GROUP_COLORS:
+            marker_color = GROUP_COLORS[group]
+            group_text = GROUP_LABELS[group]
+        else:
+            marker_color = "#6B7280"
+            group_text = "Atanmamış"
+
         tooltip_html = (
-            '<div style="font-size:14px; line-height:1.35;">'
-            f"<b>{pharmacy_name}</b>"
+            '<div style="font-size:14px; line-height:1.4;">'
+            f"<b>{pharmacy_name}</b><br>"
+            f'<span style="color:{marker_color}; font-weight:700;">{group_text}</span>'
             "</div>"
         )
 
         popup_parts = [
-            '<div style="font-family:Arial,sans-serif; font-size:13px; line-height:1.5; min-width:220px;">',
-            f'<div style="font-size:15px; font-weight:700; margin-bottom:5px;">{pharmacy_name}</div>',
+            '<div style="font-family:Arial,sans-serif; font-size:13px; line-height:1.5; min-width:230px;">',
+            f'<div style="font-size:15px; font-weight:700; margin-bottom:4px;">{pharmacy_name}</div>',
+            f'<div style="font-weight:700; color:{marker_color}; margin-bottom:6px;">{group_text}</div>',
         ]
 
         if address:
@@ -178,7 +275,7 @@ def add_pharmacy_markers(map_obj: folium.Map, df: pd.DataFrame) -> None:
             popup_parts.append(f"<div><b>Telefon:</b> {phone}</div>")
 
         popup_parts.append(
-            f'<div style="margin-top:5px; color:#666;">'
+            f'<div style="margin-top:6px; color:#666;">'
             f'{float(row["Latitude"]):.6f}, {float(row["Longitude"]):.6f}'
             "</div>"
         )
@@ -186,21 +283,46 @@ def add_pharmacy_markers(map_obj: folium.Map, df: pd.DataFrame) -> None:
 
         folium.CircleMarker(
             location=[float(row["Latitude"]), float(row["Longitude"])],
-            radius=6.0,
+            radius=6.5,
             color="#FFFFFF",
-            weight=1.6,
+            weight=1.7,
             fill=True,
-            fill_color="#1976D2",
-            fill_opacity=0.96,
+            fill_color=marker_color,
+            fill_opacity=0.97,
             tooltip=folium.Tooltip(
                 tooltip_html,
                 sticky=True,
                 direction="top",
             ),
-            popup=folium.Popup("".join(popup_parts), max_width=360),
-        ).add_to(pharmacy_layer)
+            popup=folium.Popup("".join(popup_parts), max_width=380),
+        ).add_to(layers[group])
 
-    pharmacy_layer.add_to(map_obj)
+    for layer in layers.values():
+        layer.add_to(map_obj)
+
+
+def add_legend(map_obj: folium.Map) -> None:
+    legend_html = """
+    <div style="
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        z-index: 9999;
+        background: white;
+        border: 1px solid #cfcfcf;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.18);
+    ">
+        <div style="font-weight:700; margin-bottom:7px;">Uşak Eczane Grupları</div>
+        <div><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#16A34A;margin-right:7px;"></span>Grup A</div>
+        <div><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#2563EB;margin-right:7px;"></span>Grup B</div>
+        <div><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#DC2626;margin-right:7px;"></span>Grup C</div>
+    </div>
+    """
+    map_obj.get_root().html.add_child(folium.Element(legend_html))
 
 
 def build_map(df: pd.DataFrame) -> folium.Map:
@@ -232,6 +354,7 @@ def build_map(df: pd.DataFrame) -> folium.Map:
     ).add_to(map_obj)
 
     add_pharmacy_markers(map_obj, df)
+    add_legend(map_obj)
 
     Fullscreen(
         position="topright",
@@ -263,10 +386,11 @@ def build_map(df: pd.DataFrame) -> folium.Map:
 # =========================================================
 # UYGULAMA
 # =========================================================
+
 st.title("Uşak Eczane Haritası")
 st.caption(
-    "AYÇA — Eczane adları fareyle üzerine gelince görünür. "
-    "Eczaneye tıklayınca adres, telefon ve koordinat bilgisi açılır."
+    "AYÇA — Grup A yeşil, Grup B mavi, Grup C kırmızı. "
+    "Eczane adları fareyle üzerine gelince görünür; tıklayınca detay açılır."
 )
 
 pharmacy_path = locate_pharmacy_file()
@@ -284,10 +408,31 @@ try:
         pharmacy_path.stat().st_mtime_ns,
     )
 
-    col1, col2, col3 = st.columns(3)
+    group_counts = pharmacies["Grup"].value_counts()
+
+    col1, col2, col3, col4, col5 = st.columns(5)
     col1.metric("Toplam eczane", len(pharmacies))
-    col2.metric("Koordinatlı", len(pharmacies))
-    col3.metric("Eksik koordinat", 0)
+    col2.metric("Grup A", int(group_counts.get("A", 0)))
+    col3.metric("Grup B", int(group_counts.get("B", 0)))
+    col4.metric("Grup C", int(group_counts.get("C", 0)))
+    col5.metric("Atanmamış", int(group_counts.get("ATANMAMIŞ", 0)))
+
+    unassigned = pharmacies[pharmacies["Grup"] == "ATANMAMIŞ"]
+    if not unassigned.empty:
+        st.warning(
+            "Gruba atanmamış eczaneler: "
+            + ", ".join(unassigned["Eczane"].astype(str).tolist())
+        )
+
+    with st.expander("Grup dağılımı"):
+        for group_name in ["A", "B", "C"]:
+            names = pharmacies.loc[
+                pharmacies["Grup"] == group_name, "Eczane"
+            ].sort_values().tolist()
+            st.markdown(
+                f"**Grup {group_name} ({len(names)} eczane):** "
+                + ", ".join(names)
+            )
 
     with st.expander("Kullanılan veri dosyası"):
         st.write(f"Dosya: `{pharmacy_path.name}`")
