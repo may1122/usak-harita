@@ -35,16 +35,16 @@ PREFERRED_FILE_NAME = "nöbet_ecz_liste_koordinatli(2).xlsx"
 GROUPS: dict[str, list[str]] = {
     "A": [
         "BATI", "YAĞIZ", "FİLİZ", "SEVİNÇ", "AHSEN", "IŞIL", "DİDEM",
-        "SAĞLIK", "TAN", "MASAL DİYARI", "PERDAHCI", "SULTAN", "AKDAĞ",
+        "SAĞLIK", "TAN",
         "AKKAYA", "HAZAL", "ERDEM", "ACAR", "ZÜMRÜT", "AYKANAT",
         "ALTINPINAR", "LOKMAN", "HİLAL", "YAŞAM", "ÇAKIR", "YEŞİM",
-        "AKTAY", "SU", "ZAFER", "NUR", "AKŞAHİN", "IHLAMUR",
+        "AKTAY", "SU", "ZAFER", "NUR", "AKŞAHİN", "IHLAMUR", "AKINCI", "ÖMÜR", "DÖNMEZ",
     ],
     "B": [
         "FATİH", "YENİ ŞİFA", "AYAN", "EYMEN", "GÜRAN", "MUTAFOĞLU",
         "YÜKSEL", "ÖZLEM", "EGE", "DOKUR", "BALKAN", "SAMANCI", "KİRAZ",
         "DEMET", "SERAP", "DOĞA", "VİTAMİN", "GÜLŞİFA", "ÇEKİÇ", "ŞEYMA",
-        "ÖRNEK", "SEVİM", "YAVUZ", "AKINCI", "ÖMÜR", "DÖNMEZ", "ÖZSEZER",
+        "ÖRNEK", "SEVİM", "YAVUZ", "ÖZSEZER", "MASAL DİYARI", "PERDAHCI", "SULTAN", "AKDAĞ",
         "ÇAVUSOĞLU", "AVGAN", "GÜNEŞ", "MURAT", "İREM",
     ],
     "C": [
